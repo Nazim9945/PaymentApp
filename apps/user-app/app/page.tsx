@@ -1,15 +1,14 @@
+"use client"
 import React from 'react'
-import { Button } from '@repo/ui/button'
-import { getServerSession } from 'next-auth';
-import { authoption } from './lib/authoption';
-import Buttongrp from '@repo/ui/buttongrp';
-export default async function Home() {
-  const session=await getServerSession(authoption)
+import { Appbar } from '@repo/ui/appbar';
+import { signIn,signOut, useSession } from 'next-auth/react';
+
+export default  function Home() {
+  const session=useSession()
   return (
     <div>
-      <div className="bg-blue-100 text-3xl hover:text-red-800 p-3">Home</div>
-      <Button appName="user-app">Hi, from user-app</Button>
-      <Buttongrp/>
+    <Appbar onSignIn={signIn} onSignOut={signOut} isLoggedIn={session.status}/>
+     
       {JSON.stringify(session)}
     </div>
   );
