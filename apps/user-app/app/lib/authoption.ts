@@ -3,10 +3,11 @@ import prisma from "@repo/prismadb/client";
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcrypt"
-import z from 'zod'
+import z, { number } from 'zod'
 const inputCheck = z.object({
   email: z.string().email(),
   password: z.string().min(5,{message:"Password length must be greater than 5!"}),
+  number:z.string()
 });
 
 export const authoption = {
@@ -14,52 +15,59 @@ export const authoption = {
     CredentialsProvider({
       name: "Email",
       credentials: {
-        email: { label: "Email", type: "email",placeholder:"abc@gmail.com" },
-        password:{label:"Password",type:"password"}
+        email: { label: "Email", type: "email", placeholder: "abc@gmail.com" },
+        number: { label: "Phone Number", type: "text", placeholder: "1234567891" },
+        password: { label: "Password", type: "password" },
       },
-//@ts-ignore
+      //@ts-ignore
       async authorize(credentials: any) {
-        const checkuser={
-          email:credentials.email,
-          password:credentials.password
-        }
-        if(!inputCheck.safeParse(checkuser).success) return null
-
+        const checkuser = {
+          email: credentials.email,
+          password: credentials.password,
+          number:credentials.number
+        };
+        if (!inputCheck.safeParse(checkuser).success) return null;
+ 
         //otp validation left,and sending mail for varification
 
-        const hashpwd=await bcrypt.hash(credentials.password,10)
-        const existuser=await prisma.user.findFirst({
-          where:{
-            email:credentials.email
-          }
-        })
-        if(existuser){
-        
+        const hashpwd = await bcrypt.hash(credentials.password, 10);
+        const existuser = await prisma.user.findFirst({
+          where: {
+            email: credentials.email,
+          },
+        });
+        if (existuser) {
           if (await bcrypt.compare(credentials.password, existuser.password)) {
             return {
               id: existuser.id,
               email: existuser.email,
             };
           }
-          return null
-
+          return null;
         }
         try {
-          const newuser=await prisma.user.create({
-            data:{
-              email:credentials.email,
-              password:hashpwd
-            }
-          })
+          const newuser = await prisma.user.create({
+            data: {
+              email: credentials.email,
+              password: hashpwd,
+              number:credentials.number,
+              Balance:{
+                create:{
+                  amount:Math.random()*10000,
+                  locked:0
+                }
+              }
+            },
+          });
           return {
-            id:newuser.id,
-            email:newuser.email,
-          }
-          
+            id: newuser.id,
+            email: newuser.email,
+            number:newuser.number
+          };
         } catch (error) {
-          console.log(error)
+          console.log(error);
         }
-        return null
+        return null;
       },
     }),
     GoogleProvider({
