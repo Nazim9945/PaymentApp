@@ -24,7 +24,7 @@ export default function Appclient() {
         isLoggedIn={session.status}
       />
 
-      {JSON.stringify(session)}
+      {/* {JSON.stringify(session)} */}
     </div>
   );
 }
