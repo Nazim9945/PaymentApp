@@ -18,7 +18,7 @@ const BalanceComponent = async ({amount,locked}:Props) => {
       </div>
       <div className="flex justify-between items-center border-b">
         <div>Total Balance</div>
-        <div>0 INR</div>
+        <div>{(amount/100) + locked} INR</div>
       </div>
     </div>
   );

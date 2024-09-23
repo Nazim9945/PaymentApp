@@ -5,7 +5,7 @@ const app=express()
 app.use(express.json())
 
 
-app.get('/hdfcwebhook',async(req,res)=>{
+app.post('/hdfcwebhook',async(req,res)=>{
     const paymentinfo = {
       token: req.body.token,
       userId: req.body.userId,
@@ -13,13 +13,13 @@ app.get('/hdfcwebhook',async(req,res)=>{
     }
     try {
     await prisma.$transaction([
-            prisma.balance.update({
+         prisma.balance.update({
         where:{
-            userId:paymentinfo.userId
+            userId:Number(paymentinfo.userId)
         },
         data:{
             amount:{
-                increment:paymentinfo.amount
+                increment:Number(paymentinfo.amount)
             }
         }
 
@@ -32,10 +32,10 @@ app.get('/hdfcwebhook',async(req,res)=>{
             status:"Success"
         }
     }),
-    res.status(200).json({
-        message:"captured"
+   ])
+    return res.status(200).json({
+      message: "captured",
     })
-        ])
     } catch (error) {
         console.log(error)
 
