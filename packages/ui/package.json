@@ -3,6 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "exports": {
+    "./selectinputform": "./src/selectinputform.tsx",
+    "./inputform": "./src/inputform.tsx",
     "./appbar": "./src/appbar.tsx",
     "./button": "./src/button.tsx",
     "./card": "./src/card.tsx",

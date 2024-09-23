@@ -6,8 +6,11 @@ import bcrypt from "bcrypt"
 import z, { number } from 'zod'
 const inputCheck = z.object({
   email: z.string().email(),
-  password: z.string().min(5,{message:"Password length must be greater than 5!"}),
-  number:z.string()
+  password: z.string().min(5, { message: "Need five character!!" }),
+  number: z
+    .string()
+    .min(7, { message: "Password must be at least 6 characters long." })
+    .max(10)
 });
 
 export const authoption = {
@@ -15,19 +18,30 @@ export const authoption = {
     CredentialsProvider({
       name: "Email",
       credentials: {
-        email: { label: "Email", type: "email", placeholder: "abc@gmail.com" },
-        number: { label: "Phone Number", type: "text", placeholder: "1234567891" },
-        password: { label: "Password", type: "password" },
+        email: {
+          label: "Email",
+          type: "email",
+          placeholder: "abc@gmail.com",
+          required: true,
+        },
+        number: {
+          label: "Phone Number",
+          type: "text",
+          placeholder: "1234567891",
+          required: true,
+        },
+        password: { label: "Password", type: "password", required: true },
       },
       //@ts-ignore
       async authorize(credentials: any) {
         const checkuser = {
           email: credentials.email,
           password: credentials.password,
-          number:credentials.number
+          number: credentials.number,
         };
+        console.log(inputCheck.safeParse(checkuser));
         if (!inputCheck.safeParse(checkuser).success) return null;
- 
+
         //otp validation left,and sending mail for varification
 
         const hashpwd = await bcrypt.hash(credentials.password, 10);
@@ -50,19 +64,19 @@ export const authoption = {
             data: {
               email: credentials.email,
               password: hashpwd,
-              number:credentials.number,
-              Balance:{
-                create:{
-                  amount:Math.random()*10000,
-                  locked:0
-                }
-              }
+              number: credentials.number,
+              Balance: {
+                create: {
+                  amount: Math.floor(Math.random() * 100000),
+                  locked: 0,
+                },
+              },
             },
           });
           return {
             id: newuser.id,
             email: newuser.email,
-            number:newuser.number
+            number: newuser.number,
           };
         } catch (error) {
           console.log(error);
