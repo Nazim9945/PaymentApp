@@ -1,0 +1,55 @@
+"use server"
+import { getServerSession } from "next-auth";
+import { authoption } from "../authoption";
+import prisma from "@repo/prismadb/client";
+
+
+
+export async function p2ptransfer(to:string,amount:number) {
+   const session=await getServerSession(authoption)
+   console.log(session)
+   const from =session.user.id
+   if(!from){
+    return {
+        message:"Error while sending money"
+    }
+   }
+   const touser=await prisma.user.findFirst({
+    where:{
+        number:to
+    }
+   })
+    await  prisma.$transaction(async(tx)=>{
+    const fromBalance=await tx.balance.findUnique({
+        where:{
+            userId:Number(from)
+        }
+    })
+    if(!fromBalance || (fromBalance.amount<amount)){
+        return {
+            message:"Insufficient Money"
+        }
+    }
+    await tx.balance.update({
+        where:{
+            userId:touser?.id
+        },
+        data:{
+            amount:{
+                increment:amount
+            }
+        },
+    })
+    await tx.balance.update({
+      where: {
+        userId: Number(from),
+      },
+      data: {
+        amount: {
+          decrement: amount,
+        },
+      },
+    });
+})
+
+}

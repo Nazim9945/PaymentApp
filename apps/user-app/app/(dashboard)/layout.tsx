@@ -15,7 +15,7 @@ const layout = ({children}:{children:React.ReactNode}) => {
           title={"Transection"}
           icon={<TransectionIcon />}
         />
-        <SideBarItem href={"/p2p"} title={"P2P"} icon={<P2PIcon />} />
+        <SideBarItem href={"/p2p"} title={"P2P Transfer"} icon={<P2PIcon />} />
       </div>
       <div>{children}</div>
     </div>

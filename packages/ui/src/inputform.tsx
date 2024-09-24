@@ -1,19 +1,22 @@
 "use client"
 interface Props{
-  onSet:(value:string)=>void
+  onSet:(value:string)=>void,
+  placeholder:string,
+  title:string,
+  required:boolean
 }
-export const Inputform = ({onSet}:Props) => {
+export const Inputform = ({onSet,placeholder,title,required}:Props) => {
  
   return (
     <div>
       <label>
-        <div>Amount:</div>
+        <div>{title}:</div>
         <input
           onChange={e=>onSet(e.target.value)}
           className="border"
           type="text"
-          placeholder="For Ex. 100"
-          required
+          placeholder={placeholder}
+         required={required}
         />
       </label>
     </div>

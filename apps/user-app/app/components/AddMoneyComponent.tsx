@@ -19,7 +19,7 @@ const AddMoneyComponent = () => {
     <div>
         <div className='text-xl'>Add Money</div>
         <div>
-            <Inputform onSet={value=>{
+            <Inputform title="Amount" placeholder='For Ex. 100' required={true} onSet={value=>{
               setAmount(Number(value))
             }}/>
             <Selectinputform bankapi={bankapi} onSetSelect={id=>{
